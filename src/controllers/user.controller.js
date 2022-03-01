@@ -1,77 +1,77 @@
 const User = require("../models/user.model");
-// const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const configs = require("../configs");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-// exports.register = (req, res) => {
-//   let hashedPassword = bcrypt.hashSync(req.body.password, 10);
+exports.register = (req, res) => {
+  let hashedPassword = bcrypt.hashSync(req.body.password, 10);
 
-//   const user = new User({
-//     firstName: req.body.firstName,
-//     lastName: req.body.lastName,
-//     email: req.body.email,
-//     isAdmin: false,
-//     password: hashedPassword,
-//     isSuscribe:false
-//   });
+  const user = new User({
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+    isAdmin: false,
+    password: hashedPassword,
+    isSuscribe:false
+  });
 
-//   user
-//     .save()
-//     .then((data) => {
-//       let userToken = jwt.sign(
-//         {
-//           id: data._id,
-//           isAdmin: data.isAdmin,
-//         },
-//         configs.jwt.secret,
-//         {
-//           expiresIn: 86400,
-//         }
-//       );
-//       res.status(200).send({
-//         auth: true,
-//         token: userToken,
-//       });
-//     })
-//     .catch((err) => {
-//       res.status(500).send({
-//         message: err.message || "Some error occured",
-//       });
+  user
+    .save()
+    .then((data) => {
+      let userToken = jwt.sign(
+        {
+          id: data._id,
+          isAdmin: data.isAdmin,
+        },
+        configs.jwt.secret,
+        {
+          expiresIn: 86400,
+        }
+      );
+      res.status(200).send({
+        auth: true,
+        token: userToken,
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occured",
+      });
 
-//     });
-// };
+    });
+};
 
-// exports.login = (req, res) => {
-//   console.log(req.body)
-//   User.findOne({ email: req.body.email })
-//     .then((user) => {
-//       console.log(user)
-//       let passwordValid = bcrypt.compareSync(req.body.password, user.password);
-//       if (!passwordValid) {
-//         return res.status(401).send({
-//           message: "Le mot de passe est incorrect",
-//           auth: false,
-//           token: null,
-//         });
-//       }
-//       let userToken = jwt.sign(
-//         {
-//           id: user._id,
-//           isAdmin: user.isAdmin,
-//         },
-//         configs.jwt.secret,
-//         {
-//           expiresIn: 86400,
-//         }
-//       );
-//       res.status(200).send({
-//         auth: true,
-//         token: userToken,
-//       });
-//     })
-//     .catch((err) => res.send({ message: "L'adresse mail ou le mot de passe est invalide"}));
-// };
+exports.login = (req, res) => {
+  console.log(req.body)
+  User.findOne({ email: req.body.email })
+    .then((user) => {
+      console.log(user)
+      let passwordValid = bcrypt.compareSync(req.body.password, user.password);
+      if (!passwordValid) {
+        return res.status(401).send({
+          message: "Le mot de passe est incorrect",
+          auth: false,
+          token: null,
+        });
+      }
+      let userToken = jwt.sign(
+        {
+          id: user._id,
+          isAdmin: user.isAdmin,
+        },
+        configs.jwt.secret,
+        {
+          expiresIn: 86400,
+        }
+      );
+      res.status(200).send({
+        auth: true,
+        token: userToken,
+      });
+    })
+    .catch((err) => res.send({ message: "L'adresse mail ou le mot de passe est invalide"}));
+};
 
 exports.getUser = (req, res) => {
   console.log(req.user);
