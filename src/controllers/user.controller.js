@@ -1,5 +1,5 @@
 const User = require("../models/user.model");
-var bcrypt = require('bcryptjs');
+var bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const configs = require("../configs");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -13,7 +13,7 @@ exports.register = (req, res) => {
     email: req.body.email,
     isAdmin: false,
     password: hashedPassword,
-    isSuscribe:false
+    isSuscribe: false,
   });
 
   user
@@ -38,15 +38,14 @@ exports.register = (req, res) => {
       res.status(500).send({
         message: err.message || "Some error occured",
       });
-
     });
 };
 
 exports.login = (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   User.findOne({ email: req.body.email })
     .then((user) => {
-      console.log(user)
+      console.log(user);
       let passwordValid = bcrypt.compareSync(req.body.password, user.password);
       if (!passwordValid) {
         return res.status(401).send({
@@ -71,14 +70,16 @@ exports.login = (req, res) => {
         ...user._doc,
       });
     })
-    .catch((err) => res.send({ message: "L'adresse mail ou le mot de passe est invalide"}));
+    .catch((err) =>
+      res.send({ message: "L'adresse mail ou le mot de passe est invalide" })
+    );
 };
 
 exports.getUser = (req, res) => {
   console.log(req.user);
   User.findById(req.user.id)
-      .then((user) => {
-          console.log(user);
+    .then((user) => {
+      console.log(user);
       res.send(user);
     })
     .catch((err) => res.status(404).send(err));
@@ -96,9 +97,9 @@ exports.updateUser = (req, res) => {
 
 exports.verifyToken = (req, res) => {
   if (req.user) {
-      res.status(200).json({verify:true})
+    res.status(200).json({ verify: true });
   }
-}
+};
 
 exports.payment = async (req, res, next) => {
   const { userID } = req.query;
@@ -135,7 +136,7 @@ exports.payment = async (req, res, next) => {
   
   exports.verifyPayment = async (req, res, next) => {
     try {
-      const user = await User.findById("621e90d61158191e1688d601");
+      const user = await User.findById(req.params.id);
       user.isSuscribe = true;
       user.suscribeAt = Date.now();
       await user.save();
