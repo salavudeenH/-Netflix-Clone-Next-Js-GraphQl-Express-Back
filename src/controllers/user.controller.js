@@ -68,6 +68,7 @@ exports.login = (req, res) => {
       res.status(200).send({
         auth: true,
         token: userToken,
+        ...user._doc,
       });
     })
     .catch((err) => res.send({ message: "L'adresse mail ou le mot de passe est invalide"}));
@@ -100,7 +101,7 @@ exports.verifyToken = (req, res) => {
 }
 
 exports.payment = async (req, res, next) => {
-    const { plan } = req.query;
+  const { userID } = req.query;
     const storeItems = new Map([
       [0, { priceInEUR: 30, name: "Essential" }],
       [1, { priceInEUR: 60, name: "Standard" }],
@@ -110,8 +111,8 @@ exports.payment = async (req, res, next) => {
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         mode: "payment",
-        success_url: `http://localhost:3000/confirmation?plan=${plan}`,
-        cancel_url: `http://localhost:3000/cancel?plan=${plan}`,
+        success_url: `http://localhost:3000/confirmation?plan=${userID}`,
+        cancel_url: `http://localhost:3000/cancel?plan=${userID}`,
         line_items: req.body.items.map((item) => {
           const storeItem = storeItems.get(item.id);
           return {
@@ -134,7 +135,7 @@ exports.payment = async (req, res, next) => {
   
   exports.verifyPayment = async (req, res, next) => {
     try {
-      const user = await User.findById({id: req.body.id });
+      const user = await User.findById("621e90d61158191e1688d601");
       user.isSuscribe = true;
       user.suscribeAt = Date.now();
       await user.save();
@@ -143,3 +144,4 @@ exports.payment = async (req, res, next) => {
       res.status(400).json({ err: true });
     }
   };
+  
