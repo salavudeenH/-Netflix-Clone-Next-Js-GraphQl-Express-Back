@@ -112,8 +112,8 @@ exports.payment = async (req, res, next) => {
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         mode: "payment",
-        success_url: `http://localhost:3000/confirmation?plan=${userID}`,
-        cancel_url: `http://localhost:3000/cancel?plan=${userID}`,
+        success_url: `https://netflix-a63k4dqsb-salavudeen27-gmailcom.vercel.app/confirmation${userID}`,
+        cancel_url: `https://netflix-a63k4dqsb-salavudeen27-gmailcom.vercel.app/cancel?plan=${userID}`,
         line_items: req.body.items.map((item) => {
           const storeItem = storeItems.get(item.id);
           return {
