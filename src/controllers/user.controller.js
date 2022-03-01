@@ -1,5 +1,5 @@
 const User = require("../models/user.model");
-const bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const configs = require("../configs");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
