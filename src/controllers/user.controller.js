@@ -144,4 +144,6 @@ exports.payment = async (req, res, next) => {
       res.status(400).json({ err: true });
     }
   };
+
+  // console.log("hcdhcdh")
   
